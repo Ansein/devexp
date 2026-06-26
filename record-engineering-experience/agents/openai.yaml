@@ -1,0 +1,7 @@
+interface:
+  display_name: "Record Engineering Experience"
+  short_description: "Maintain lightweight .devexp project records."
+  default_prompt: "Use $record-engineering-experience to create or update a lightweight .devexp engineering experience archive for this project."
+
+policy:
+  allow_implicit_invocation: true

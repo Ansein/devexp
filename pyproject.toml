@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "record-engineering-experience-skill"
+version = "0.1.0"
+description = "Codex Skill and CLI for lightweight engineering experience records."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Record Engineering Experience contributors" }
+]
+
+[project.scripts]
+devexp = "devexp:main"
+
+[tool.setuptools]
+package-dir = { "" = "record-engineering-experience/scripts" }
+py-modules = [
+  "devexp",
+  "init_devexp",
+  "new_record",
+  "validate_devexp",
+  "export_payloads",
+  "sync_common",
+  "sync_notion",
+  "sync_feishu"
+]

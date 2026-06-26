@@ -1,0 +1,9 @@
+Skill草案.pdf
+项目开发经验整理_2026-06-25T23-05-43.md
+.env
+.devexp/sync/sync_state.json
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
