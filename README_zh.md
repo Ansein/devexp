@@ -1,6 +1,6 @@
 # 工程经验记录 Skill
 
-这个仓库提供一份 Codex Skill，用来在不同软件项目中维护轻量级工程经验档案。
+这个仓库提供 Codex Skill、CLI 和插件包，用来在不同软件项目中维护轻量级工程经验档案。
 
 它的目标是帮助开发者保存那些几个月后很难重新推断出来的信息：项目为什么变成现在这样、哪些决策真正重要、哪些重大问题已经解决、以后应该如何安全地恢复开发。
 
@@ -50,22 +50,31 @@
 |-- .env.example
 |-- .gitignore
 |-- pyproject.toml
-`-- record-engineering-experience/
-    |-- SKILL.md
-    |-- agents/
-    |   `-- openai.yaml
-    |-- references/
-    |   |-- templates.md
-    |   `-- sync-payloads.md
-    `-- scripts/
-        |-- init_devexp.py
-        |-- new_record.py
-        |-- validate_devexp.py
-        |-- export_payloads.py
-        |-- devexp.py
-        |-- sync_common.py
-        |-- sync_notion.py
-        `-- sync_feishu.py
+|-- record-engineering-experience/
+|   |-- SKILL.md
+|   |-- agents/
+|   |   `-- openai.yaml
+|   |-- references/
+|   |   |-- templates.md
+|   |   `-- sync-payloads.md
+|   `-- scripts/
+|       |-- init_devexp.py
+|       |-- new_record.py
+|       |-- validate_devexp.py
+|       |-- export_payloads.py
+|       |-- devexp.py
+|       |-- sync_common.py
+|       |-- sync_notion.py
+|       `-- sync_feishu.py
+`-- plugins/
+    `-- devexp/
+        |-- README.md
+        |-- .codex-plugin/
+        |   `-- plugin.json
+        |-- scripts/
+        |   `-- install_cli.py
+        `-- skills/
+            `-- record-engineering-experience/
 ```
 
 `SKILL.md` 是 Codex 实际读取的 Skill 契约。`references/` 放模板和同步 payload 设计。`scripts/` 提供初始化、创建记录、导出 payload 和校验 `.devexp/` 的确定性工具。
@@ -74,9 +83,13 @@
 
 ## 安装方式
 
+现在有三种入口，可以单独使用，也可以组合使用。
+
+### CLI
+
 先安装一次 CLI，然后在任意真实项目目录里运行 `devexp`。
 
-本地开发安装：
+从本地 checkout 开发安装：
 
 ```bash
 pip install -e .
@@ -85,14 +98,32 @@ pip install -e .
 从 GitHub 安装：
 
 ```bash
-pipx install git+https://github.com/<owner>/<repo>.git
+pipx install git+https://github.com/Ansein/devexp.git
 ```
-
-如果只是把文件夹安装到 `.codex/skills/` 作为 Codex Skill，Codex 仍然可以直接使用 Skill 内部脚本。CLI 安装主要是给人手动使用，避免输入很长的脚本路径。
 
 CLI 是稳定入口。它不依赖这个仓库放在 Codex、Claude Code、某个项目目录，还是其他位置。安装后，系统生成的 `devexp` 命令会导入已安装模块，模块再通过自己的 `__file__` 自动定位内部脚本。
 
+### Codex Skill
+
+如果只想让 Codex 理解这个工作流，而不安装完整插件，可以单独安装 Skill：
+
+```bash
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo Ansein/devexp \
+  --path record-engineering-experience
+```
+
 如果没有安装 CLI，使用这个 Skill 的 agent 应该把 `record-engineering-experience/scripts/devexp.py` 解析为相对当前加载的 `SKILL.md` 的路径，作为 fallback。
+
+### Codex Plugin
+
+插件包位于 `plugins/devexp/`。它包含 Skill，并提供显式 CLI 安装脚本：
+
+```bash
+python plugins/devexp/scripts/install_cli.py
+```
+
+安装脚本会优先使用 `pipx`，安装 `devexp`，运行 `pipx ensurepath`，并通过 `devexp doctor` 检查命令是否可用。如果 PATH 变化没有立刻生效，重启终端或 Codex 会话。
 
 ## 使用方式
 

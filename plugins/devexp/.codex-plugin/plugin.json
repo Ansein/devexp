@@ -1,0 +1,26 @@
+{
+  "name": "devexp",
+  "version": "0.1.0",
+  "description": "Codex plugin for engineering experience records with the devexp CLI installer.",
+  "author": {
+    "name": "Ansein",
+    "url": "https://github.com/Ansein"
+  },
+  "homepage": "https://github.com/Ansein/devexp",
+  "repository": "https://github.com/Ansein/devexp",
+  "keywords": ["codex", "skill", "engineering-records", "adr", "devexp"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DevExp",
+    "shortDescription": "Capture project decisions, issues, and reviews.",
+    "longDescription": "DevExp helps Codex maintain lightweight engineering experience archives in real project directories. It bundles the Record Engineering Experience Skill and a script that installs the devexp CLI into PATH for direct project usage.",
+    "developerName": "Ansein",
+    "category": "Productivity",
+    "capabilities": ["Write", "Local files"],
+    "defaultPrompt": [
+      "Install the devexp CLI into PATH.",
+      "Initialize devexp records for this project.",
+      "Create an ADR for this engineering decision."
+    ]
+  }
+}

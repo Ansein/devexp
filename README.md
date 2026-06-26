@@ -1,6 +1,6 @@
 # Record Engineering Experience Skill
 
-This repository contains a Codex Skill for maintaining lightweight engineering experience records across software projects.
+This repository contains a Codex Skill, CLI, and plugin package for maintaining lightweight engineering experience records across software projects.
 
 The goal is to help a developer preserve the parts of a project that are hard to reconstruct months later: why the project is shaped the way it is, which decisions mattered, which major problems were solved, and how to resume work safely.
 
@@ -50,22 +50,31 @@ The local Markdown archive is the source of truth. Notion and Feishu are treated
 |-- .env.example
 |-- .gitignore
 |-- pyproject.toml
-`-- record-engineering-experience/
-    |-- SKILL.md
-    |-- agents/
-    |   `-- openai.yaml
-    |-- references/
-    |   |-- templates.md
-    |   `-- sync-payloads.md
-    `-- scripts/
-        |-- init_devexp.py
-        |-- new_record.py
-        |-- validate_devexp.py
-        |-- export_payloads.py
-        |-- devexp.py
-        |-- sync_common.py
-        |-- sync_notion.py
-        `-- sync_feishu.py
+|-- record-engineering-experience/
+|   |-- SKILL.md
+|   |-- agents/
+|   |   `-- openai.yaml
+|   |-- references/
+|   |   |-- templates.md
+|   |   `-- sync-payloads.md
+|   `-- scripts/
+|       |-- init_devexp.py
+|       |-- new_record.py
+|       |-- validate_devexp.py
+|       |-- export_payloads.py
+|       |-- devexp.py
+|       |-- sync_common.py
+|       |-- sync_notion.py
+|       `-- sync_feishu.py
+`-- plugins/
+    `-- devexp/
+        |-- README.md
+        |-- .codex-plugin/
+        |   `-- plugin.json
+        |-- scripts/
+        |   `-- install_cli.py
+        `-- skills/
+            `-- record-engineering-experience/
 ```
 
 `SKILL.md` is the Codex-facing contract. The reference files contain templates and sync payload shapes. The scripts provide deterministic helpers for initializing, creating records, exporting payloads, and validating `.devexp/` archives.
@@ -74,9 +83,13 @@ Use [.env.example](./.env.example) as the credential template for local sync con
 
 ## Installation
 
+There are three supported entry points. They can be used separately or together.
+
+### CLI
+
 Install the CLI once, then run `devexp` from any real project directory.
 
-For local development:
+For local development from a checkout:
 
 ```bash
 pip install -e .
@@ -85,14 +98,32 @@ pip install -e .
 From GitHub:
 
 ```bash
-pipx install git+https://github.com/<owner>/<repo>.git
+pipx install git+https://github.com/Ansein/devexp.git
 ```
-
-If you only install the folder as a Codex Skill under `.codex/skills/`, Codex can still use the bundled scripts directly. The CLI install is for humans who want a short command.
 
 The CLI is the stable entry point. It does not depend on whether this repository is stored under Codex, Claude Code, a project folder, or another location. After installation, the generated `devexp` command imports the installed module, and the module locates its bundled scripts from its own `__file__`.
 
+### Codex Skill
+
+Install only the Skill when you want Codex to understand the workflow but do not need the plugin package:
+
+```bash
+python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
+  --repo Ansein/devexp \
+  --path record-engineering-experience
+```
+
 If the CLI is not installed, an agent using the Skill should resolve `record-engineering-experience/scripts/devexp.py` relative to the loaded `SKILL.md` file as a fallback.
+
+### Codex Plugin
+
+The plugin package lives in `plugins/devexp/`. It bundles the Skill and provides an explicit CLI installer:
+
+```bash
+python plugins/devexp/scripts/install_cli.py
+```
+
+The installer prefers `pipx`, installs `devexp`, runs `pipx ensurepath`, and verifies the command with `devexp doctor`. Restart the terminal or Codex session if PATH changes are not visible immediately.
 
 ## Usage
 
