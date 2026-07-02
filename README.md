@@ -45,6 +45,9 @@ The local Markdown archive is the source of truth. Notion and Feishu are treated
 
 ```text
 .
+|-- .github/
+|   `-- workflows/
+|       `-- validate.yml
 |-- README.md
 |-- README_zh.md
 |-- .env.example
@@ -75,6 +78,8 @@ The local Markdown archive is the source of truth. Notion and Feishu are treated
         |   `-- install_cli.py
         `-- skills/
             `-- record-engineering-experience/
+`-- tools/
+    `-- validate_repo.py
 ```
 
 `SKILL.md` is the Codex-facing contract. The reference files contain templates and sync payload shapes. The scripts provide deterministic helpers for initializing, creating records, exporting payloads, and validating `.devexp/` archives.
@@ -83,7 +88,7 @@ Use [.env.example](./.env.example) as the credential template for local sync con
 
 ## Installation
 
-There are three supported entry points. They can be used separately or together.
+There are three supported entry points. The recommended path is to install the CLI first, then let `devexp` install the Codex-facing pieces.
 
 ### CLI
 
@@ -108,6 +113,12 @@ The CLI is the stable entry point. It does not depend on whether this repository
 Install only the Skill when you want Codex to understand the workflow but do not need the plugin package:
 
 ```bash
+devexp install skill
+```
+
+Manual fallback:
+
+```bash
 python ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
   --repo Ansein/devexp \
   --path record-engineering-experience
@@ -120,10 +131,11 @@ If the CLI is not installed, an agent using the Skill should resolve `record-eng
 The plugin package lives in `plugins/devexp/`. It bundles the Skill and provides an explicit CLI installer:
 
 ```bash
-python plugins/devexp/scripts/install_cli.py
+devexp install plugin
+devexp install plugin-cli
 ```
 
-The installer prefers `pipx`, installs `devexp`, runs `pipx ensurepath`, and verifies the command with `devexp doctor`. Restart the terminal or Codex session if PATH changes are not visible immediately.
+`devexp install plugin` copies the plugin into the personal Codex plugin location and updates the personal marketplace file. `devexp install plugin-cli` runs the bundled CLI installer, which prefers `pipx`, installs `devexp`, runs `pipx ensurepath`, and verifies the command with `devexp doctor`. Restart the terminal or Codex session if PATH changes are not visible immediately.
 
 ## Usage
 
@@ -133,6 +145,7 @@ Run commands from the real project directory you want to document. The CLI defau
 cd /path/to/your-project
 devexp --help
 devexp doctor
+devexp doctor --json
 ```
 
 Initialize `.devexp/`:
@@ -163,6 +176,18 @@ devexp validate
 devexp validate --strict
 ```
 
+Browse records:
+
+```bash
+devexp summary
+devexp summary --format json
+devexp list
+devexp list --type adr
+devexp show 1
+devexp show overview
+devexp open
+```
+
 Export Notion and Feishu payloads:
 
 ```bash
@@ -185,6 +210,17 @@ devexp sync-feishu --sync-docs --apply
 ```
 
 The sync scripts are dry-run by default. They write to remote services only when `--apply` is passed.
+
+## Maintainer Commands
+
+The plugin contains a copied Skill so that Codex can discover it from the plugin package. Keep it synchronized with the root Skill before publishing:
+
+```bash
+devexp dev sync-plugin-skill
+devexp dev check-plugin-skill
+```
+
+GitHub Actions runs Python compilation, plugin Skill sync checks, and repository metadata validation on push and pull request.
 
 ## Notion Setup
 

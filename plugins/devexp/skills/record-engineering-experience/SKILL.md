@@ -83,12 +83,15 @@ If running from another directory, pass `--root /path/to/project`.
 
 The CLI is path-stable after installation and does not depend on whether the repository is stored under Codex, Claude Code, or a project folder. Use `devexp doctor` to inspect the actual module path, script directory, and target root.
 
+When this Skill is loaded from the DevExp Codex plugin and the user explicitly asks to install the CLI, prefer `devexp install plugin-cli` if the `devexp` command is already available. Otherwise locate the plugin root that contains `scripts/install_cli.py` and run that installer. Do not perform persistent CLI installation unless the user asks for it.
+
 If `devexp` is not installed, resolve `scripts/devexp.py` relative to this loaded `SKILL.md`, not relative to the user's project, and run it as a fallback.
 
 Inspect path resolution:
 
 ```bash
 devexp doctor
+devexp doctor --json
 ```
 
 Initialize a project archive:
@@ -117,6 +120,16 @@ Validate archive structure:
 ```bash
 devexp validate
 devexp validate --strict
+```
+
+Inspect existing records before writing when useful:
+
+```bash
+devexp summary
+devexp list
+devexp list --type adr
+devexp show overview
+devexp show 1
 ```
 
 Export sync payloads:

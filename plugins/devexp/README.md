@@ -9,7 +9,13 @@ The plugin and CLI solve different parts of the workflow:
 
 ## Install The CLI
 
-From a source checkout:
+Recommended:
+
+```bash
+devexp install plugin-cli
+```
+
+From a source checkout, the direct fallback is:
 
 ```bash
 python plugins/devexp/scripts/install_cli.py
@@ -31,6 +37,8 @@ Run commands from the project you want to document:
 
 ```bash
 devexp doctor
+devexp summary
+devexp list
 devexp init
 devexp new adr --title "Use local Markdown as the source of truth"
 devexp validate

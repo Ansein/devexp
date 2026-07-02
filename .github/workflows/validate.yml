@@ -1,0 +1,32 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python scripts
+        run: |
+          python -m py_compile \
+            record-engineering-experience/scripts/*.py \
+            plugins/devexp/scripts/*.py \
+            plugins/devexp/skills/record-engineering-experience/scripts/*.py \
+            tools/*.py
+
+      - name: Check plugin Skill sync
+        run: python record-engineering-experience/scripts/devexp.py dev check-plugin-skill
+
+      - name: Validate repository metadata
+        run: python tools/validate_repo.py
